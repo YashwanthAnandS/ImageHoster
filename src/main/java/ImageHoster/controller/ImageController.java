@@ -3,6 +3,8 @@ package ImageHoster.controller;
 import ImageHoster.model.Image;
 import ImageHoster.model.Tag;
 import ImageHoster.model.User;
+import ImageHoster.model.Comment;
+import ImageHoster.service.CommentService;
 import ImageHoster.service.ImageService;
 import ImageHoster.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,10 +52,13 @@ public class ImageController {
     //public String showImage(@PathVariable("title") String title, Model model) {
     //Image image = imageService.getImageByTitle(title);
     @RequestMapping("/images/{id}/{title}")
-    public String showImage(@PathVariable("title") String title, @PathVariable("id") Integer id, Model model) {
+    public String showImage(@PathVariable("title") String title, @PathVariable("id") Integer id,  Model model) throws NullPointerException {
         Image image = imageService.getImageByTitle(title, id);
         model.addAttribute("image", image);
         model.addAttribute("tags", image.getTags());
+        model.addAttribute("comments", (List<Comment>)image.getComments() );
+
+        int x = 10;
         return "images/image";
     }
 
@@ -105,13 +110,15 @@ public class ImageController {
 
         String error = "Only the owner of the image can edit the image";
 
-        if(!imageCreator.getUsername().equalsIgnoreCase(loggedInUser.getUsername())){
+        //If creator and logged in user mismatch on imageId then we send error message
+        if(imageCreator.getId() != loggedInUser.getId()){
             //String error = "Only the owner of the image can edit the image";
             String imgTit = image.getTitle();
             redirect.addAttribute("editError", error).addFlashAttribute("editError", error);
-            return "redirect:images/"+imageId+"/"+imgTit;
+
+            return "redirect:/images/"+imageId+"/"+imgTit;
         }
-        else {
+        else { // if creator is current logged in user then continue to editing page
             String tags = convertTagsToString(image.getTags());
             model.addAttribute("image", image);
             model.addAttribute("tags", tags);
@@ -150,7 +157,7 @@ public class ImageController {
         updatedImage.setDate(new Date());
 
         imageService.updateImage(updatedImage);
-        return "redirect:images/"+imageId+"/"+updatedImage.getTitle();
+        return "redirect:/images/"+imageId+"/"+updatedImage.getTitle();
     }
 
 
@@ -169,13 +176,14 @@ public class ImageController {
         User imageCreator = image.getUser();
         User loggedInUser = (User) session.getAttribute("loggeduser");
 
-        if(!imageCreator.getUsername().equalsIgnoreCase(loggedInUser.getUsername())){
+        //If creator and logged in user mismatch on imageId then we send error message
+        if(imageCreator.getId() != loggedInUser.getId()){
             String error = "Only the owner of the image can delete the image";
             String imgTit = image.getTitle();
             redirect.addAttribute("deleteError", error).addFlashAttribute("deleteError", error);
-            return "redirect:images/"+imageId+"/"+imgTit;
+            return "redirect:/images/"+imageId+"/"+imgTit;
         }
-        else {
+        else {//else we delete message and call required service
             imageService.deleteImage(imageId);
             return "redirect:/images";
         }

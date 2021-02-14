@@ -47,12 +47,12 @@ public class UserController {
 
         //Call required service to check for password strength
         boolean passwordCheck = userService.passwordStrengthCheck(user);
-
+        //if password matches requirement then register new user
         if (passwordCheck == true) {
             userService.registerUser(user);
             return "redirect:/users/login";
         } else {
-            String error = "Password must contain at least 1 alphabet, 1 number & 1 special character";
+            String error = "Password must contain atleast 1 alphabet, 1 number & 1 special character";
             redirect.addAttribute("passwordTypeError", error).addFlashAttribute("passwordTypeError", error);
             return "redirect:/users/registration";
         }
