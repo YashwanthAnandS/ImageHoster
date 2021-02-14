@@ -157,12 +157,29 @@ public class ImageController {
     //This controller method is called when the request pattern is of type 'deleteImage' and also the incoming request is of DELETE type
     //The method calls the deleteImage() method in the business logic passing the id of the image to be deleted
     //Looks for a controller method with request mapping of type '/images'
-    @RequestMapping(value = "/deleteImage", method = RequestMethod.DELETE)
-    public String deleteImageSubmit(@RequestParam(name = "imageId") Integer imageId) {
-        imageService.deleteImage(imageId);
-        return "redirect:/images";
-    }
+//    @RequestMapping(value = "/deleteImage", method = RequestMethod.DELETE)
+//    public String deleteImageSubmit(@RequestParam(name = "imageId") Integer imageId) {
+//        imageService.deleteImage(imageId);
+//        return "redirect:/images";
+//    }
 
+    @RequestMapping(value = "/deleteImage", method = RequestMethod.DELETE)
+    public String deleteImageSubmit(@RequestParam(name = "imageId") Integer imageId, HttpSession session, RedirectAttributes redirect) {
+        Image image = imageService.getImage(imageId);
+        User imageCreator = image.getUser();
+        User loggedInUser = (User) session.getAttribute("loggeduser");
+
+        if(!imageCreator.getUsername().equalsIgnoreCase(loggedInUser.getUsername())){
+            String error = "Only the owner of the image can delete the image";
+            String imgTit = image.getTitle();
+            redirect.addAttribute("deleteError", error).addFlashAttribute("deleteError", error);
+            return "redirect:images/"+imageId+"/"+imgTit;
+        }
+        else {
+            imageService.deleteImage(imageId);
+            return "redirect:/images";
+        }
+    }
 
     //This method converts the image to Base64 format
     private String convertUploadedFileToBase64(MultipartFile file) throws IOException {
