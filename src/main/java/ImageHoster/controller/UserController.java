@@ -41,24 +41,36 @@ public class UserController {
     //This controller method is called when the request pattern is of type 'users/registration' and also the incoming request is of POST type
     //This method calls the business logic and after the user record is persisted in the database, directs to login page
     @RequestMapping(value = "users/registration", method = RequestMethod.POST)
-    //public String registerUser(User user) {
-    public String registerUser(User user, RedirectAttributes redirect) {
-        //userService.registerUser(user);
+    public String registerUser(User user, Model model) {
+        int initAlphabet = 0, initDigit = 0, initCharacter = 0;
+        String userPassword = user.getPassword();
 
-        //Call required service to check for password strength
-        boolean passwordCheck = userService.passwordStrengthCheck(user);
-        //if password matches requirement then register new user
-        if (passwordCheck == true) {
-            userService.registerUser(user);
-            return "redirect:/users/login";
-        } else {
-            String error = "Password must contain atleast 1 alphabet, 1 number & 1 special character";
-            redirect.addAttribute("passwordTypeError", error).addFlashAttribute("passwordTypeError", error);
-            return "redirect:/users/registration";
+        for (int i = 0; i < userPassword.length(); i++) {
+            char ch = userPassword.charAt(i);
+
+            if ((ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z')) {
+                initAlphabet++;
+            } else if (ch >= '0' && ch <= '9') {
+                initDigit++;
+            } else {
+                initCharacter++;
+            }
+
         }
 
-        //userService.registerUser(user);
-        // return "redirect:/users/login";
+        if (initAlphabet != 0 && initCharacter != 0 && initDigit != 0) {
+            userService.registerUser(user);
+            return "users/login";
+        } else {
+            String error = "Password must contain atleast 1 alphabet, 1 number & 1 special character";
+            User userObject = new User();
+            UserProfile userProfile = new UserProfile();
+            userObject.setProfile(userProfile);
+            model.addAttribute("User", userObject);
+            model.addAttribute("passwordTypeError", error);
+            return "users/registration";
+        }
+
     }
 
     //This controller method is called when the request pattern is of type 'users/login'

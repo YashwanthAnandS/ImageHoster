@@ -51,14 +51,12 @@ public class ImageController {
     //@RequestMapping("/images/{title}")
     //public String showImage(@PathVariable("title") String title, Model model) {
     //Image image = imageService.getImageByTitle(title);
-    @RequestMapping("/images/{id}/{title}")
-    public String showImage(@PathVariable("title") String title, @PathVariable("id") Integer id,  Model model) throws NullPointerException {
-        Image image = imageService.getImageByTitle(title, id);
+    @RequestMapping("/images/{imageId}/{title}")
+    public String showImage(@PathVariable("title") String title, @PathVariable("imageId") Integer imageId, Model model) {
+        Image image = imageService.getImage(imageId);
         model.addAttribute("image", image);
         model.addAttribute("tags", image.getTags());
-        model.addAttribute("comments", (List<Comment>)image.getComments() );
-
-        int x = 10;
+        model.addAttribute("comments", image.getComments());
         return "images/image";
     }
 
