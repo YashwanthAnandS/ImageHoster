@@ -14,7 +14,7 @@ public class CommentRepository {
     private EntityManagerFactory emf;
 
     //Repo func to persist new comments into comments table
-    public Comment addNewComment(Comment newComment){
+    public Comment addNewComment(Comment newComment) {
         EntityManager em = emf.createEntityManager();
         EntityTransaction transaction = em.getTransaction();
 

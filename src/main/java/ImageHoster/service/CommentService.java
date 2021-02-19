@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+
 @Service
 public class CommentService {
 
@@ -13,7 +14,7 @@ public class CommentService {
     private CommentRepository commentRepository;
 
     //Adding new comment for given imageId
-    public Comment addNewComment(Comment newComment){
+    public Comment addNewComment(Comment newComment) {
         return commentRepository.addNewComment(newComment);
     }
 

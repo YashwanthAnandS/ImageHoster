@@ -25,7 +25,7 @@ public class CommentController {
 
 
     @RequestMapping(value = "/image/{imageId}/{title}/comments", method = RequestMethod.POST)
-    public String addNewComment(@PathVariable(value = "imageId") Integer imageId, @PathVariable(value = "title") String title, @RequestParam(value = "comment") String userCommentInput, HttpSession session, Comment newComment){
+    public String addNewComment(@PathVariable(value = "imageId") Integer imageId, @PathVariable(value = "title") String title, @RequestParam(value = "comment") String userCommentInput, HttpSession session, Comment newComment) {
         Image image = imageService.getImage(imageId);
         User loggedInUser = (User) session.getAttribute("loggeduser");
 
@@ -38,9 +38,7 @@ public class CommentController {
 
         commentService.addNewComment(newComment);
 
-        return "redirect:/images/" + imageId + "/" + title ;
-
-        //return "/image/" + imageId + "/" + title + "/comments" ;
+        return "redirect:/images/" + imageId + "/" + title;
 
 
     }

@@ -48,9 +48,6 @@ public class ImageController {
     //Also now you need to add the tags of an image in the Model type object
     //Here a list of tags is added in the Model type object
     //this list is then sent to 'images/image.html' file and the tags are displayed
-    //@RequestMapping("/images/{title}")
-    //public String showImage(@PathVariable("title") String title, Model model) {
-    //Image image = imageService.getImageByTitle(title);
     @RequestMapping("/images/{imageId}/{title}")
     public String showImage(@PathVariable("title") String title, @PathVariable("imageId") Integer imageId, Model model) {
         Image image = imageService.getImage(imageId);
@@ -99,7 +96,6 @@ public class ImageController {
     //The method first needs to convert the list of all the tags to a string containing all the tags separated by a comma and then add this string in a Model type object
     //This string is then displayed by 'edit.html' file as previous tags of an image
     @RequestMapping(value = "/editImage")
-    // public String editImage(@RequestParam("imageId") Integer imageId, Model model) {
     public String editImage(@RequestParam("imageId") Integer imageId, Model model, HttpSession session, RedirectAttributes redirect) {
         Image image = imageService.getImage(imageId);
 
@@ -109,14 +105,13 @@ public class ImageController {
         String error = "Only the owner of the image can edit the image";
 
         //If creator and logged in user mismatch on imageId then we send error message
-        if(imageCreator.getId() != loggedInUser.getId()){
-            //String error = "Only the owner of the image can edit the image";
+        if (imageCreator.getId() != loggedInUser.getId()) {
             String imgTit = image.getTitle();
             redirect.addAttribute("editError", error).addFlashAttribute("editError", error);
 
-            return "redirect:/images/"+imageId+"/"+imgTit;
-        }
-        else { // if creator is current logged in user then continue to editing page
+            return "redirect:/images/" + imageId + "/" + imgTit;
+        } else {
+            // if creator is current logged in user then continue to editing page
             String tags = convertTagsToString(image.getTags());
             model.addAttribute("image", image);
             model.addAttribute("tags", tags);
@@ -155,7 +150,7 @@ public class ImageController {
         updatedImage.setDate(new Date());
 
         imageService.updateImage(updatedImage);
-        return "redirect:/images/"+imageId+"/"+updatedImage.getTitle();
+        return "redirect:/images/" + imageId + "/" + updatedImage.getTitle();
     }
 
 
@@ -175,13 +170,13 @@ public class ImageController {
         User loggedInUser = (User) session.getAttribute("loggeduser");
 
         //If creator and logged in user mismatch on imageId then we send error message
-        if(imageCreator.getId() != loggedInUser.getId()){
+        if (imageCreator.getId() != loggedInUser.getId()) {
             String error = "Only the owner of the image can delete the image";
             String imgTit = image.getTitle();
             redirect.addAttribute("deleteError", error).addFlashAttribute("deleteError", error);
-            return "redirect:/images/"+imageId+"/"+imgTit;
-        }
-        else {//else we delete message and call required service
+            return "redirect:/images/" + imageId + "/" + imgTit;
+        } else {
+            //else we delete message and call required service
             imageService.deleteImage(imageId);
             return "redirect:/images";
         }
